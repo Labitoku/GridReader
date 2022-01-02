@@ -1,31 +1,21 @@
 from PIL import Image
 from PIL import ImageColor
-
+import math
 import sys
 import os
 
 
 
 def get_tolerance(source_color, check_color, tolerance = 0):
-
-
-
     check_new_format = [check_color[0], check_color[1], check_color[2]]
 
     if check_new_format[0] in range(source_color[0] - tolerance, source_color[0] + tolerance):
         if check_new_format[1] in range(source_color[1] - tolerance, source_color[1] + tolerance):
             if check_new_format[2] in range(source_color[2] - tolerance, source_color[2] + tolerance):
-                print(source_color, check_new_format)
+                #print(source_color, check_new_format)
                 return True
 
     return False
-
-    #return check_new_format[0] < source_color[0] - tolerance or check_new_format[0] > source_color[0] + tolerance or check_new_format[1] < source_color[1] - tolerance or check_new_format[1] > source_color[1] + tolerance or check_new_format[2] < source_color[2] - tolerance or check_new_format[2] > source_color[2] + tolerance
-
-    """if check_new_format[0] > 150 and check_new_format[1] < 100 and  check_new_format[2] < 100:
-        print(check_new_format)
-
-    return source_color == check_new_format"""
 
 
 
@@ -46,14 +36,10 @@ def get_markers_by_color(img: Image, color2mark, approximation_area_size, tolera
         Basically, indicates the dimensions of the two left corners for the function to search markers.
 
     tolerance : int, optionnal
-        Used to reduce the accuracy of the spotting. Default 0 means it has to be the exact same color.
+        Used to reduce the accuracy of the spotting. Default 0 means it has to be the exact same color.Ajout 
     """
 
-
     x, y = img.size
-    print(x, y)
-
-
     top_mark = (x, y)
     bottom_mark = (x, y)
 
@@ -80,3 +66,21 @@ def get_markers_by_color(img: Image, color2mark, approximation_area_size, tolera
     print(top_mark, bottom_mark)
     return top_mark, bottom_mark
 
+
+def adjust_transform(img, top_mark, bottom_mark):
+
+    adj = bottom_mark[0] - top_mark[0]
+    opp = bottom_mark[1] - top_mark[1]
+    h = math.sqrt(adj**2 + opp**2)
+    angle = math.cos(adj / h)
+    new_img = img.rotate(0 - angle if angle > 0 else angle)
+
+    print("Adj : ", str(adj), "\nOpp : ", str(opp), "\nHyp : ", str(h), "\nAngle : ", str(angle))
+
+    return new_img
+
+
+
+
+def get_markers_alignment(top_mark, bottom_mark):
+    return top_mark[1] == bottom_mark[1]
