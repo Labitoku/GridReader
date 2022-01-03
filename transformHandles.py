@@ -21,6 +21,8 @@ def get_tolerance(source_color, check_color, tolerance = 0):
 
 def get_markers_by_color(img: Image, color2mark, approximation_area_size, tolerance = 0):
     """
+    Description
+    -----------
     Detects markers on the grid, and returns the leftest point for each of them.
 
     Parameters
@@ -36,7 +38,7 @@ def get_markers_by_color(img: Image, color2mark, approximation_area_size, tolera
         Basically, indicates the dimensions of the two left corners for the function to search markers.
 
     tolerance : int, optionnal
-        Used to reduce the accuracy of the spotting. Default 0 means it has to be the exact same color.Ajout 
+        Used to reduce the accuracy of the spotting. Default 0 means it has to be the exact same color.
     """
 
     x, y = img.size
@@ -49,18 +51,18 @@ def get_markers_by_color(img: Image, color2mark, approximation_area_size, tolera
     approx_bottom_end = (0, 0)
     
     for i in range(0, approximation_area_size):
-        for j in range(0, 200):
+        for j in range(0, approximation_area_size):
             if get_tolerance(color2mark, img.getpixel((j, i)), tolerance) and j < top_mark[0]:
-                top_mark = (i, j)
-                approx_top_start = (i - approximation_area_size, j - approximation_area_size)
+                top_mark = (j, i)
+                approx_top_start = (j - approximation_area_size, i - approximation_area_size)
                 approx_top_end = (approx_top_start[0] + 2 * approximation_area_size, approx_top_start[1] + 2 * approximation_area_size)
 
 
     for i in range(y - approximation_area_size, y):
         for j in range(0, approximation_area_size):
             if  get_tolerance(color2mark, img.getpixel((j, i)), tolerance) and j < bottom_mark[0]:
-                bottom_mark = (i, j)
-                approx_bottom_start = (i - approximation_area_size, j - approximation_area_size)
+                bottom_mark = (j, i)
+                approx_bottom_start = (j - approximation_area_size, i - approximation_area_size)
                 approx_bottom_end = (approx_bottom_start[0] + 2 * approximation_area_size, approx_bottom_start[1] + 2 * approximation_area_size)
 
     print(top_mark, bottom_mark)
@@ -68,19 +70,35 @@ def get_markers_by_color(img: Image, color2mark, approximation_area_size, tolera
 
 
 def adjust_transform(img, top_mark, bottom_mark):
+    """
+    Description
+    -----------
+    Rotates the image, based on the two markes passed in parameters.
 
-    adj = bottom_mark[0] - top_mark[0]
-    opp = bottom_mark[1] - top_mark[1]
+    Parameters
+    ----------
+    img : Image
+        The image of the grid you want to adjust.
+
+    top_mark : tuple(int, int)
+        Coordinates of the top mark on the grid.
+
+    bottom_mark : tuple(int, int)
+        Coordinates of the bottom mark on the grid.
+    """
+
+    adj = bottom_mark[1] - top_mark[1]
+    opp = bottom_mark[0] - top_mark[0]
     h = math.sqrt(adj**2 + opp**2)
-    angle = math.cos(adj / h)
-    new_img = img.rotate(0 - angle if angle > 0 else angle)
+    angle = math.acos(adj / h)
+    deg_angle = math.degrees(angle)
 
-    print("Adj : ", str(adj), "\nOpp : ", str(opp), "\nHyp : ", str(h), "\nAngle : ", str(angle))
+    new_img = img.rotate(0 - deg_angle if deg_angle > 0 else deg_angle)
+
+    print(f"Adj : {adj}\nOpp : {opp}\nHyp : {h}\nAngle (radians) : {angle}\nAngle (degrés) : {deg_angle}")
 
     return new_img
 
 
-
-
 def get_markers_alignment(top_mark, bottom_mark):
-    return top_mark[1] == bottom_mark[1]
+    return top_mark[0] == bottom_mark[0]
