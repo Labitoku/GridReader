@@ -3,6 +3,67 @@ import sys
 import os
 
 
+
+def crop_transparency(img):
+    x, y = img.size
+
+    img.show()
+    print(img.getpixel((25,25)))
+
+    left = 0
+    top = 0
+    right = 0
+    bottom = 0
+
+    #LEFT
+    for i in range(0, x):
+        for j in range(0, y):
+            if img.getpixel((i, j))[3] != 0:
+                left = i
+                break
+        else:
+            continue
+        break
+
+    #TOP
+    for i in range(0, y):
+        for j in range(0, x):
+            if img.getpixel((j, i))[3] != 0:
+                top = i
+                break
+        else:
+            continue  # only executed if the inner loop did NOT break
+        break  # only executed if the inner loop DID break
+
+    #RIGHT
+    for i in reversed(range(0, x)):
+        for j in range(0, y):
+            if img.getpixel((i, j))[3] != 0:
+                right = i
+                break
+        else:
+            continue
+        break
+
+    #BOTTOM
+    for i in reversed(range(0, y)):
+        for j in range(0, x):
+            if img.getpixel((j, i))[3] != 0:
+                bottom = i
+                break
+        else:
+            continue  # only executed if the inner loop did NOT break
+        break  # only executed if the inner loop DID break
+
+
+    print(top, left, bottom, right)
+
+    cropped_img = img.crop((left, top, right, bottom))
+    return cropped_img
+
+
+
+
 def crop_n_save(img, crop_dim, offset = (0, 0), full_cell = True):
     """
     Description
@@ -23,7 +84,14 @@ def crop_n_save(img, crop_dim, offset = (0, 0), full_cell = True):
     full_cell : bool, optionnal
         Tells the function if it can cut a cell when there is not enough room for it (when it reaches the end of the image).
     """
-    x, y = img
+    x, y = img.size
+
+    if offset == (0, 0):
+        cell_qty_x = int(x / crop_dim[0])
+        cell_qty_y = int(y / crop_dim[1])
+
+        print(cell_qty_x, cell_qty_y)
+        
 
 
 
