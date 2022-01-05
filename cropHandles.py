@@ -62,7 +62,6 @@ def crop_transparency(img):
             continue  
         break 
 
-
     print(top, left, bottom, right)
 
     cropped_img = img.crop((left, top, right, bottom))
@@ -183,21 +182,17 @@ def crop_n_save(img, crop_dim, offset = (0, 0), full_cell = True, nom="img"):
     print(cell_qty_x, cell_qty_y)
 
     for i in range(0, cell_qty_x):
+        left = i * crop_dim[0] + i * offset[0]    
+        right = left + crop_dim[0]
+
         for j in range(0, cell_qty_y):
-            left = i * crop_dim[0] + offset[0]
-            top = j * crop_dim[1] + offset[1]
-            right = left + crop_dim[0]
+            top = j * crop_dim[1] + j * offset[1]
             bottom = top + crop_dim[1]
 
 
             new_img = img.crop((left, top, right, bottom))
-            new_img.save(f"grid_samples/resCrops/{nom}_{i}{j}.png")
-
-
+            new_img.save(f"grid_samples/resCrops/{nom}_{i}_{j}.png")
 
     return 0
-
-
-
 
 

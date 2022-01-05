@@ -64,7 +64,7 @@ def main():
     img8_w.save("grid_samples/res3.png")
     new_img8_w = cropHandles.crop_by_color(img8_w, col, tolerance=40)
     new_img8_w.save("grid_samples/res4.png")
-    #cropHandles.crop_n_save(new_img8_w, (49, 49), offset=(1,1), full_cell=False)
+    cropHandles.crop_n_save(new_img8_w, (48, 48), offset=(3,2), full_cell=False, nom="test")
 
 
 if __name__ == '__main__':
