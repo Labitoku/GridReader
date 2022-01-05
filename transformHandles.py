@@ -82,7 +82,8 @@ def adjust_transform(img, top_mark, bottom_mark):
     angle = math.acos(adj / h)
     deg_angle = math.degrees(angle)
 
-    new_img = img.rotate(0 - deg_angle if deg_angle > 0 else deg_angle)
+    #new_img = img.rotate(0 - deg_angle if deg_angle > 0 else deg_angle)
+    new_img = img.rotate(0 - deg_angle if deg_angle > 0 else deg_angle, resample=Image.BICUBIC, expand=True)
 
     print(f"Adj : {adj}\nOpp : {opp}\nHyp : {h}\nAngle (radians) : {angle}\nAngle (degrés) : {deg_angle}")
 
