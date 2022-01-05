@@ -49,19 +49,22 @@ def main():
     cropHandles.crop_n_save(new_img5, (50, 50))"""
 
 
-    img7 = Image.open("grid_samples/im7.png")
+    """img7 = Image.open("grid_samples/im7.png")
     img7_w = Image.open("grid_samples/im7_w.png")
     top_mark7_w, bottom_mark7_w = transformHandles.get_markers_by_color(img7_w, col, 250, tolerance=40)
     img7_w = transformHandles.adjust_transform(img7_w, top_mark7_w, bottom_mark7_w)
-    img7_w.putpixel(top_mark7_w, (255,0,255))
-    img7_w.putpixel(bottom_mark7_w, (255,0,255))    
-
     img7_w.save("grid_samples/res3.png")
-    img7_w.show()
     new_img7_w = cropHandles.crop_by_color(img7_w, col, tolerance=40)
-    new_img7_w.show()
     new_img7_w.save("grid_samples/res4.png")
+    cropHandles.crop_n_save(new_img7_w, (49, 49), offset=(1,1), full_cell=False)"""
 
+    img8_w = Image.open("grid_samples/im8_w.png")
+    top_mark8_w, bottom_mark8_w = transformHandles.get_markers_by_color(img8_w, col, 250, tolerance=40)
+    img8_w = transformHandles.adjust_transform(img8_w, top_mark8_w, bottom_mark8_w)
+    img8_w.save("grid_samples/res3.png")
+    new_img8_w = cropHandles.crop_by_color(img8_w, col, tolerance=40)
+    new_img8_w.save("grid_samples/res4.png")
+    cropHandles.crop_n_save(new_img8_w, (49, 49), offset=(1,1), full_cell=False)
 
 
 if __name__ == '__main__':

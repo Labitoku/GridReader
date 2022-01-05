@@ -94,7 +94,6 @@ def crop_by_color(img, color2crop, tolerance = 0):
     bottom = 0
 
 
-
     #LEFT
     for i in range(0, x):
         for j in range(0, y):
@@ -142,7 +141,7 @@ def crop_by_color(img, color2crop, tolerance = 0):
     return cropped_img
 
 
-def crop_n_save(img, crop_dim, offset = (0, 0), full_cell = True):
+def crop_n_save(img, crop_dim, offset = (0, 0), full_cell = True, nom="img"):
     """
     Description
     -----------
@@ -164,12 +163,37 @@ def crop_n_save(img, crop_dim, offset = (0, 0), full_cell = True):
     """
     x, y = img.size
 
-    if offset == (0, 0):
-        cell_qty_x = int(x / crop_dim[0])
-        cell_qty_y = int(y / crop_dim[1])
+    
+    cell_qty_x = int(x / crop_dim[0])
+    cell_qty_y = int(y / crop_dim[1])
 
-        print(cell_qty_x, cell_qty_y)
-        
+    x = x - cell_qty_x * offset[0]
+    y = y - cell_qty_y * offset[1]
+
+    cell_qty_x = int(x / crop_dim[0])
+    cell_qty_y = int(y / crop_dim[1])
+
+    if full_cell:
+        if x % crop_dim[0] != 0:
+            cell_qty_x -= 1
+
+        if y % crop_dim[1] != 0:
+            cell_qty_y -= 1
+
+    print(cell_qty_x, cell_qty_y)
+
+    for i in range(0, cell_qty_x):
+        for j in range(0, cell_qty_y):
+            left = i * crop_dim[0] + offset[0]
+            top = j * crop_dim[1] + offset[1]
+            right = left + crop_dim[0]
+            bottom = top + crop_dim[1]
+
+
+            new_img = img.crop((left, top, right, bottom))
+            new_img.save(f"grid_samples/resCrops/{nom}_{i}{j}.png")
+
+
 
     return 0
 
