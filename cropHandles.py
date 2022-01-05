@@ -1,15 +1,22 @@
 import PIL
 import sys
 import os
-
-
+import colorHandles
 
 def crop_transparency(img):
+    """
+    Description
+    -----------
+    Crops the image's transparent borders.
+
+    Parameters
+    ----------
+    img : Image
+        The image you want to crop the transparency from.
+
+    """
+
     x, y = img.size
-
-    img.show()
-    print(img.getpixel((25,25)))
-
     left = 0
     top = 0
     right = 0
@@ -22,8 +29,8 @@ def crop_transparency(img):
                 left = i
                 break
         else:
-            continue
-        break
+            continue        # only executed if the inner loop did NOT break
+        break               # only executed if the inner loop DID break
 
     #TOP
     for i in range(0, y):
@@ -32,8 +39,8 @@ def crop_transparency(img):
                 top = i
                 break
         else:
-            continue  # only executed if the inner loop did NOT break
-        break  # only executed if the inner loop DID break
+            continue  
+        break  
 
     #RIGHT
     for i in reversed(range(0, x)):
@@ -52,8 +59,8 @@ def crop_transparency(img):
                 bottom = i
                 break
         else:
-            continue  # only executed if the inner loop did NOT break
-        break  # only executed if the inner loop DID break
+            continue  
+        break 
 
 
     print(top, left, bottom, right)
@@ -62,6 +69,77 @@ def crop_transparency(img):
     return cropped_img
 
 
+def crop_by_color(img, color2crop, tolerance = 0):
+    """
+    Description
+    -----------
+    Crops the image's transparent borders.
+
+    Parameters
+    ----------
+    img : Image
+        The image you want to crop, until the colour is found.
+    
+    color2crop : array of int [r,g,b]
+        The color to crop by.
+
+    tolerance : int, optionnal
+        Used to reduce the accuracy of the spotting. Default 0 means it has to be the exact same color.
+    """
+
+    x, y = img.size
+    left = 0
+    top = 0
+    right = 0
+    bottom = 0
+
+
+
+    #LEFT
+    for i in range(0, x):
+        for j in range(0, y):
+            if colorHandles.get_tolerance(color2crop, img.getpixel((i, j)), tolerance):
+                left = i
+                break
+        else:
+            continue        # only executed if the inner loop did NOT break
+        break               # only executed if the inner loop DID break
+
+    #TOP
+    for i in range(0, y):
+        for j in range(0, x):
+            if colorHandles.get_tolerance(color2crop, img.getpixel((j, i)), tolerance):
+                top = i
+                break
+        else:
+            continue  
+        break  
+
+    #RIGHT
+    for i in reversed(range(0, x)):
+        for j in range(0, y):
+            if colorHandles.get_tolerance(color2crop, img.getpixel((i, j)), tolerance):
+                right = i
+                break
+        else:
+            continue
+        break
+
+    #BOTTOM
+    for i in reversed(range(0, y)):
+        for j in range(0, x):
+            if colorHandles.get_tolerance(color2crop, img.getpixel((j, i)), tolerance):
+                bottom = i
+                break
+        else:
+            continue  
+        break 
+
+
+    print(top, left, bottom, right)
+
+    cropped_img = img.crop((left, top, right, bottom))
+    return cropped_img
 
 
 def crop_n_save(img, crop_dim, offset = (0, 0), full_cell = True):
@@ -92,8 +170,6 @@ def crop_n_save(img, crop_dim, offset = (0, 0), full_cell = True):
 
         print(cell_qty_x, cell_qty_y)
         
-
-
 
     return 0
 

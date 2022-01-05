@@ -3,19 +3,7 @@ from PIL import ImageColor
 import math
 import sys
 import os
-
-
-
-def get_tolerance(source_color, check_color, tolerance = 0):
-    check_new_format = [check_color[0], check_color[1], check_color[2]]
-
-    if check_new_format[0] in range(source_color[0] - tolerance, source_color[0] + tolerance):
-        if check_new_format[1] in range(source_color[1] - tolerance, source_color[1] + tolerance):
-            if check_new_format[2] in range(source_color[2] - tolerance, source_color[2] + tolerance):
-                #print(source_color, check_new_format)
-                return True
-
-    return False
+import colorHandles
 
 
 
@@ -52,7 +40,7 @@ def get_markers_by_color(img: Image, color2mark, approximation_area_size, tolera
     
     for i in range(0, approximation_area_size):
         for j in range(0, approximation_area_size):
-            if get_tolerance(color2mark, img.getpixel((j, i)), tolerance) and j < top_mark[0]:
+            if colorHandles.get_tolerance(color2mark, img.getpixel((j, i)), tolerance) and j < top_mark[0]:
                 top_mark = (j, i)
                 approx_top_start = (j - approximation_area_size, i - approximation_area_size)
                 approx_top_end = (approx_top_start[0] + 2 * approximation_area_size, approx_top_start[1] + 2 * approximation_area_size)
@@ -60,12 +48,13 @@ def get_markers_by_color(img: Image, color2mark, approximation_area_size, tolera
 
     for i in range(y - approximation_area_size, y):
         for j in range(0, approximation_area_size):
-            if  get_tolerance(color2mark, img.getpixel((j, i)), tolerance) and j < bottom_mark[0]:
+            if  colorHandles.get_tolerance(color2mark, img.getpixel((j, i)), tolerance) and j < bottom_mark[0]:
                 bottom_mark = (j, i)
                 approx_bottom_start = (j - approximation_area_size, i - approximation_area_size)
                 approx_bottom_end = (approx_bottom_start[0] + 2 * approximation_area_size, approx_bottom_start[1] + 2 * approximation_area_size)
 
     print(top_mark, bottom_mark)
+    print(img.getpixel(top_mark), img.getpixel(bottom_mark))
     return top_mark, bottom_mark
 
 

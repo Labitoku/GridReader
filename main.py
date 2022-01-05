@@ -36,18 +36,31 @@ def main():
     new_img.show()
     new_img.save("grid_samples/res1.png")"""
 
-    img6 = Image.open("grid_samples/im6.png") # check for alpha
+    img6 = Image.open("grid_samples/res1.png") # check for alpha
 
     new_img6 = cropHandles.crop_transparency(img6)
     new_img6.save("grid_samples/res2.png")
-    new_img6.show()
+    #new_img6.show()
 
-    #cropHandles.crop_n_save(new_img, (50, 50))
+    """top_mark5, bottom_mark5 = transformHandles.get_markers_by_color(img5, col, 250, tolerance=40)
+    img5 = transformHandles.adjust_transform(img5, top_mark5, bottom_mark5)
+    new_img5 = cropHandles.crop_transparency(img5)
+    #new_img5.show()
+    cropHandles.crop_n_save(new_img5, (50, 50))"""
 
 
+    img7 = Image.open("grid_samples/im7.png")
+    img7_w = Image.open("grid_samples/im7_w.png")
+    top_mark7_w, bottom_mark7_w = transformHandles.get_markers_by_color(img7_w, col, 250, tolerance=40)
+    img7_w = transformHandles.adjust_transform(img7_w, top_mark7_w, bottom_mark7_w)
+    img7_w.putpixel(top_mark7_w, (255,0,255))
+    img7_w.putpixel(bottom_mark7_w, (255,0,255))    
 
-    #angle = math.cos(45)
-    #print(angle)
+    img7_w.save("grid_samples/res3.png")
+    img7_w.show()
+    new_img7_w = cropHandles.crop_by_color(img7_w, col, tolerance=40)
+    new_img7_w.show()
+    new_img7_w.save("grid_samples/res4.png")
 
 
 
