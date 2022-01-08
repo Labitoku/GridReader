@@ -22,13 +22,18 @@ class GridWindow(QMainWindow):
     def __init__(self):
         super().__init__()
 
-
-
         self.setWindowTitle("Gready")
         #Quand j'aurais une icone
         #self.setWindowIcon()
+        self.setGeometry(0, 0, 1280, 720) 
+        self.dimensions = QDesktopWidget().screenGeometry()
 
+
+
+        self.setTools()
+        self.setWorkspace()
         self.setMenubar()
+
 
         self.showMaximized()
 
@@ -40,6 +45,22 @@ class GridWindow(QMainWindow):
         file_menu = QMenu("&File", self)
         file_menu.addAction("Open file")
         menubar.addMenu(file_menu)
+
+    def setTools(self):
+        tools_container = QWidget(self)
+        tools_container.setGeometry(QRect(0,0, self.dimensions.width() / 5, self.dimensions.height()))
+        tools_container.setStyleSheet("background-color:red;")
+        self.tools_layout = QVBoxLayout(tools_container)
+
+
+
+
+    def setWorkspace(self):
+        workspace_container = QWidget(self)
+        workspace_container.setGeometry(QRect(self.dimensions.width() / 5,0, self.dimensions.width() * .8, self.dimensions.height()))
+        workspace_container.setStyleSheet("background-color:blue;")
+        self.tools_layout = QVBoxLayout(workspace_container)
+
 
 
     def fade(self, widget):
