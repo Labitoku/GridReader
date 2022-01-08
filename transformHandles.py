@@ -7,7 +7,7 @@ import colorHandles
 
 
 
-def get_markers_by_color(img: Image, color2mark, approximation_area_size, tolerance = 0):
+def getMarkersByColor(img: Image, color2mark, approximation_area_size, tolerance = 0):
     """
     Description
     -----------
@@ -58,7 +58,7 @@ def get_markers_by_color(img: Image, color2mark, approximation_area_size, tolera
     return top_mark, bottom_mark
 
 
-def adjust_transform(img, top_mark, bottom_mark):
+def adjustTransform(img, top_mark, bottom_mark):
     """
     Description
     -----------
@@ -90,5 +90,5 @@ def adjust_transform(img, top_mark, bottom_mark):
     return new_img
 
 
-def get_markers_alignment(top_mark, bottom_mark):
+def getMarkersAlignment(top_mark, bottom_mark):
     return top_mark[0] == bottom_mark[0]

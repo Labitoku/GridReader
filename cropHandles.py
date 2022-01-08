@@ -3,7 +3,7 @@ import sys
 import os
 import colorHandles
 
-def crop_transparency(img):
+def cropTransparency(img):
     """
     Description
     -----------
@@ -68,7 +68,7 @@ def crop_transparency(img):
     return cropped_img
 
 
-def crop_by_color(img, color2crop, tolerance = 0):
+def cropByColor(img, color2crop, tolerance = 0):
     """
     Description
     -----------
@@ -140,7 +140,7 @@ def crop_by_color(img, color2crop, tolerance = 0):
     return cropped_img
 
 
-def crop_n_save(img, crop_dim, offset = (0, 0), full_cell = True, nom="img"):
+def cropNSave(img, crop_dim, offset = (0, 0), full_cell = True, nom="img"):
     """
     Description
     -----------

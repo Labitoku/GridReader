@@ -3,7 +3,7 @@ import os
 import sys
 
 
-def get_tolerance(source_color, check_color, tolerance = 0):
+def getTolerance(source_color, check_color, tolerance = 0):
     """
     Description
     -----------
