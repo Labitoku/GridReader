@@ -28,6 +28,17 @@ class GridWindow(QMainWindow):
         self.setGeometry(0, 0, 1280, 720) 
         self.dimensions = QDesktopWidget().screenGeometry()
 
+        ############VARIABLES############
+
+        self.angle = 0
+        self.color = None
+
+        self.size_cell = (0, 0)
+        self.offset_cell = (0, 0)
+        self.full_cell = True
+
+        ############VARIABLES############
+
 
         self.setMenubar()
         self.setTools()
@@ -115,12 +126,15 @@ class GridWindow(QMainWindow):
         size_layout.addWidget(x_lb)
         x_edit = QLineEdit(self)
         size_layout.addWidget(x_edit)
+        x_edit.textChanged.connect(self.onSizeXEdit)
+
         
         y_lb = QLabel("Y : ")
         size_layout.addWidget(y_lb)
         y_edit = QLineEdit(self)
         size_layout.addWidget(y_edit)
         self.tools_layout.addLayout(size_layout)
+        y_edit.textChanged.connect(self.onSizeYEdit)
 
         cells_offset_lb = QLabel("Offset : ")
         self.tools_layout.addWidget(cells_offset_lb)
@@ -130,11 +144,13 @@ class GridWindow(QMainWindow):
         offset_layout.addWidget(offset_x_lb)
         offset_x_edit = QLineEdit(self)
         offset_layout.addWidget(offset_x_edit)
+        offset_x_edit.textChanged.connect(self.onOffsetXEdit)
         
         offset_y_lb = QLabel("Y : ")
         offset_layout.addWidget(offset_y_lb)
         offset_y_edit = QLineEdit(self)
         offset_layout.addWidget(offset_y_edit)
+        offset_y_edit.textChanged.connect(self.onOffsetYEdit)
 
         self.tools_layout.addLayout(offset_layout)
 
@@ -147,6 +163,47 @@ class GridWindow(QMainWindow):
 
         self.tools_layout.addStretch()
 
+
+    def onSizeXEdit(self, text):
+        if text == '':
+            val = 0
+        else:
+            val = int(text)
+
+        l = list(self.size_cell)
+        l[0] = val
+        self.size_cell = tuple(l) 
+
+    def onSizeYEdit(self, text):
+        if text == '':
+            val = 0
+        else:
+            val = int(text)
+
+        l = list(self.size_cell)
+        l[1] = val
+        self.size_cell = tuple(l) 
+
+    def onOffsetXEdit(self, text):
+        if text == '':
+            val = 0
+        else:
+            val = int(text)
+
+        l = list(self.offset_cell)
+        l[0] = val
+        self.offset_cell = tuple(l) 
+
+    def onOffsetYEdit(self, text):
+        if text == '':
+            val = 0
+        else:
+            val = int(text)
+
+        l = list(self.offset_cell)
+        l[1] = val
+        self.offset_cell = tuple(l) 
+        
         
     def onColorSwatchClick(self):
         
@@ -180,3 +237,4 @@ class GridWindow(QMainWindow):
         self.animation.setStartValue(0)
         self.animation.setEndValue(1)
         self.animation.start()
+
