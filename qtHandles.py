@@ -9,13 +9,6 @@ from PyQt5 import QtCore, QtGui
 from PyQt5.QtGui import * 
 from PyQt5.QtCore import * 
 import sys 
-#import smtplib
-#from email.mime.text import MIMEText
-import smtplib 
-from email.mime.multipart import MIMEMultipart 
-from email.mime.text import MIMEText 
-from email.mime.base import MIMEBase 
-from email import encoders 
 
 class GridWindow(QMainWindow):
 
@@ -31,7 +24,8 @@ class GridWindow(QMainWindow):
         ############VARIABLES############
 
         self.angle = 0
-        self.color = None
+        self.color = QColor(255,0,0,0)
+        self.tolerance = 0
 
         self.size_cell = (0, 0)
         self.offset_cell = (0, 0)
@@ -44,7 +38,7 @@ class GridWindow(QMainWindow):
         self.setTools()
         self.setWorkspace()
 
-        style = '''
+        """style = '''
             QWidget{
                 background-color: rgba(60,60,60,255)
             }
@@ -72,9 +66,9 @@ class GridWindow(QMainWindow):
             QPushButton:pressed {
                 background-color: #80c342;
             }
-            '''
+            '''"""
 
-        self.setStyleSheet(style)
+        #self.setStyleSheet(style)
 
         self.showMaximized()
 
@@ -95,75 +89,150 @@ class GridWindow(QMainWindow):
         #tools_container.setStyleSheet("background-color: rgba(60,60,60,255);")
         
         self.tools_layout = QVBoxLayout(tools_container)
-        
+
+
+        ############TRANSPARENCE############
         transp_lb = QLabel("Auto transparency removing")
-        self.tools_layout.addWidget(transp_lb)        
+        self.tools_layout.addWidget(transp_lb)  
+
         transp_btn = QPushButton("Remove", self)
+        transp_btn.clicked.connect(self.onAutoTransp)
         self.tools_layout.addWidget(transp_btn)
         
+        self.tools_layout.addStretch()
+
+
+        ############COULEURS############
+        color_layout = QHBoxLayout()
         bycolor_lb = QLabel("Auto resizing by color")
-        self.tools_layout.addWidget(bycolor_lb)
-        bycolor_swatch = QColorDialog(self)
-        self.tools_layout.addWidget(bycolor_swatch)
+        color_layout.addWidget(bycolor_lb)
+
+        test_button = QPushButton(self)
+        color_layout.addWidget(test_button)
+        test_button.clicked.connect(self.colorPicker)
+        self.tools_layout.addLayout(color_layout)
+
+        tolerance_layout = QHBoxLayout()
+        tolerance_lb = QLabel("Tolerance : ")
+        tolerance_layout.addWidget(tolerance_lb)
+
+        tolerance_edit = QLineEdit(self)
+        tolerance_layout.addWidget(tolerance_edit)
+        tolerance_edit.textChanged.connect(self.onToleranceEdit)
+        self.tools_layout.addLayout(tolerance_layout)
+
+        self.tools_layout.addStretch()
 
 
+        ############ROTATION############
         rotate_lb = QLabel("Rotation")
         self.tools_layout.addWidget(rotate_lb)
+
         rotate_edit = QLineEdit(self)
+        rotate_edit.textChanged.connect(self.onAngleEdit)
         self.tools_layout.addWidget(rotate_edit)
+
         rotate_sld = QSlider(Qt.Horizontal)
+        rotate_sld.setMinimum(0)
+        rotate_sld.setMaximum(360)
+        rotate_sld.setSingleStep(0.1)
+        rotate_sld.valueChanged.connect(self.onSliderEdit)
         self.tools_layout.addWidget(rotate_sld)
+
         rotate_btn = QPushButton("Auto rotate", self)
+        rotate_btn.clicked.connect(self.onAutoAngle)
         self.tools_layout.addWidget(rotate_btn)
 
+        
+
+        self.tools_layout.addStretch()
+
+
+        ############CELLULES############
         cells_lb = QLabel("Cells")
         self.tools_layout.addWidget(cells_lb)
+
         cells_size_lb = QLabel("Size : ")
         self.tools_layout.addWidget(cells_size_lb)
 
         size_layout = QHBoxLayout()
         x_lb = QLabel("X : ")
         size_layout.addWidget(x_lb)
-        x_edit = QLineEdit(self)
-        size_layout.addWidget(x_edit)
-        x_edit.textChanged.connect(self.onSizeXEdit)
 
+        x_edit = QLineEdit(self)
+        x_edit.textChanged.connect(self.onSizeXEdit)
+        size_layout.addWidget(x_edit)
         
         y_lb = QLabel("Y : ")
         size_layout.addWidget(y_lb)
         y_edit = QLineEdit(self)
         size_layout.addWidget(y_edit)
-        self.tools_layout.addLayout(size_layout)
         y_edit.textChanged.connect(self.onSizeYEdit)
+        self.tools_layout.addLayout(size_layout)
 
         cells_offset_lb = QLabel("Offset : ")
         self.tools_layout.addWidget(cells_offset_lb)
 
         offset_layout = QHBoxLayout()
+
         offset_x_lb = QLabel("X : ")
         offset_layout.addWidget(offset_x_lb)
+
         offset_x_edit = QLineEdit(self)
-        offset_layout.addWidget(offset_x_edit)
         offset_x_edit.textChanged.connect(self.onOffsetXEdit)
-        
+        offset_layout.addWidget(offset_x_edit)
+
+
         offset_y_lb = QLabel("Y : ")
         offset_layout.addWidget(offset_y_lb)
+
         offset_y_edit = QLineEdit(self)
-        offset_layout.addWidget(offset_y_edit)
         offset_y_edit.textChanged.connect(self.onOffsetYEdit)
+        offset_layout.addWidget(offset_y_edit)
 
         self.tools_layout.addLayout(offset_layout)
 
         full_cell_lb = QLabel("Full cell : ")
         self.tools_layout.addWidget(full_cell_lb)
+
         full_cell_cb = QCheckBox(self)
+        full_cell_cb.stateChanged.connect(lambda:self.onFullCellChanged(full_cell_cb))
         self.tools_layout.addWidget(full_cell_cb)
-
-
 
         self.tools_layout.addStretch()
 
 
+    ############TRANSPARENCE############
+    def onAutoTransp(self):
+        #removeTransp()
+        i = 0
+
+    ############COULEURS############
+    def colorPicker(self):
+        self.color = QColorDialog.getColor()
+
+    def onToleranceEdit(self, text):
+        if text == '':
+            val = 0
+        else:
+            val = int(text)
+        self.tolerance = val
+
+    ############ROTATION############
+    def onAngleEdit(self, text):
+        if text == '':
+            self.angle = 0
+        else:
+            self.angle = int(text)
+
+    def onSliderEdit(self, angle):
+        self.angle = angle
+
+    def onAutoAngle(self):
+        self.angle = 12
+        #self.angle = getAngle()
+
+    ############CELLULES############
     def onSizeXEdit(self, text):
         if text == '':
             val = 0
@@ -204,10 +273,12 @@ class GridWindow(QMainWindow):
         l[1] = val
         self.offset_cell = tuple(l) 
         
-        
-    def onColorSwatchClick(self):
-        
+    def onFullCellChanged(self, button):
+        self.full_cell = button.isChecked()
 
+
+
+    def onColorSwatchClick(self):
         return color
 
     def setWorkspace(self):
