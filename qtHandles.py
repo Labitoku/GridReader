@@ -23,6 +23,10 @@ class GridWindow(QMainWindow):
 
         ############VARIABLES############
 
+        self.image_url = "grid_samples/im8.png"
+        self.image = Image.open(self.image_url)
+
+
         self.angle = 0
         self.color = QColor(255,0,0,0)
         self.tolerance = 0
@@ -79,10 +83,36 @@ class GridWindow(QMainWindow):
 
         self.mb_y = menubar.size().height()
 
-        file_menu = QMenu("&File", self)
-        file_menu.addAction("Open file")
+        file_menu = QMenu('&File', self)
+
+        openAct = QAction('Open file', self)
+        openAct.setShortcut('Ctrl+O')
+        openAct.setStatusTip('Open image file')
+        openAct.triggered.connect(self.open_file)
+
+        file_menu.addAction(openAct)
+
+        #file_menu.addAction("Open file")
+
         menubar.addMenu(file_menu)
 
+
+    def open_file(self):
+
+        try:
+            name = QFileDialog.getOpenFileName(self, 'Open File', 'C\\', 'PNG files (*.png)')
+            self.image_url = name[0]
+            
+        except FileNotFoundError:
+            pass
+
+
+
+
+
+
+
+    ############TOOLS############
     def setTools(self):
         tools_container = QWidget(self)
         tools_container.setGeometry(QRect(0, self.mb_y, self.dimensions.width() / 5, self.dimensions.height()))
@@ -165,6 +195,7 @@ class GridWindow(QMainWindow):
         
         y_lb = QLabel("Y : ")
         size_layout.addWidget(y_lb)
+
         y_edit = QLineEdit(self)
         size_layout.addWidget(y_edit)
         y_edit.textChanged.connect(self.onSizeYEdit)
@@ -277,18 +308,25 @@ class GridWindow(QMainWindow):
         self.full_cell = button.isChecked()
 
 
-
-    def onColorSwatchClick(self):
-        return color
-
+    ############WORKSPACE############
     def setWorkspace(self):
         workspace_container = QWidget(self)
         workspace_container.setGeometry(QRect(self.dimensions.width() / 5, self.mb_y, self.dimensions.width() * .8, self.dimensions.height()))
         workspace_container.setStyleSheet("background-color: rgba(230,230,230,255);")
-        self.tools_layout = QVBoxLayout(workspace_container)
+        self.workspace_layout = QGridLayout(workspace_container)
+        self.workspace_layout.setAlignment(Qt.AlignCenter)
+
+        label = QLabel(self)
+        pix = QPixmap(self.image_url)
+        label.setPixmap(pix)
+        self.workspace_layout.addWidget(label)
 
 
 
+
+
+    
+    ############UTILITARY############
     def fade(self, widget):
         self.effect = QGraphicsOpacityEffect()
         widget.setGraphicsEffect(self.effect)
