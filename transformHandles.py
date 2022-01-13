@@ -40,7 +40,7 @@ def getMarkersByColor(img: Image, color2mark, approximation_area_size, tolerance
     
     for i in range(0, approximation_area_size):
         for j in range(0, approximation_area_size):
-            if colorHandles.get_tolerance(color2mark, img.getpixel((j, i)), tolerance) and j < top_mark[0]:
+            if colorHandles.getTolerance(color2mark, img.getpixel((j, i)), tolerance) and j < top_mark[0]:
                 top_mark = (j, i)
                 approx_top_start = (j - approximation_area_size, i - approximation_area_size)
                 approx_top_end = (approx_top_start[0] + 2 * approximation_area_size, approx_top_start[1] + 2 * approximation_area_size)
@@ -48,7 +48,7 @@ def getMarkersByColor(img: Image, color2mark, approximation_area_size, tolerance
 
     for i in range(y - approximation_area_size, y):
         for j in range(0, approximation_area_size):
-            if  colorHandles.get_tolerance(color2mark, img.getpixel((j, i)), tolerance) and j < bottom_mark[0]:
+            if  colorHandles.getTolerance(color2mark, img.getpixel((j, i)), tolerance) and j < bottom_mark[0]:
                 bottom_mark = (j, i)
                 approx_bottom_start = (j - approximation_area_size, i - approximation_area_size)
                 approx_bottom_end = (approx_bottom_start[0] + 2 * approximation_area_size, approx_bottom_start[1] + 2 * approximation_area_size)

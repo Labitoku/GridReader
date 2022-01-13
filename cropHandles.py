@@ -96,7 +96,7 @@ def cropByColor(img, color2crop, tolerance = 0):
     #LEFT
     for i in range(0, x):
         for j in range(0, y):
-            if colorHandles.get_tolerance(color2crop, img.getpixel((i, j)), tolerance):
+            if colorHandles.getTolerance(color2crop, img.getpixel((i, j)), tolerance):
                 left = i
                 break
         else:
@@ -106,7 +106,7 @@ def cropByColor(img, color2crop, tolerance = 0):
     #TOP
     for i in range(0, y):
         for j in range(0, x):
-            if colorHandles.get_tolerance(color2crop, img.getpixel((j, i)), tolerance):
+            if colorHandles.getTolerance(color2crop, img.getpixel((j, i)), tolerance):
                 top = i
                 break
         else:
@@ -116,7 +116,7 @@ def cropByColor(img, color2crop, tolerance = 0):
     #RIGHT
     for i in reversed(range(0, x)):
         for j in range(0, y):
-            if colorHandles.get_tolerance(color2crop, img.getpixel((i, j)), tolerance):
+            if colorHandles.getTolerance(color2crop, img.getpixel((i, j)), tolerance):
                 right = i
                 break
         else:
@@ -126,7 +126,7 @@ def cropByColor(img, color2crop, tolerance = 0):
     #BOTTOM
     for i in reversed(range(0, y)):
         for j in range(0, x):
-            if colorHandles.get_tolerance(color2crop, img.getpixel((j, i)), tolerance):
+            if colorHandles.getTolerance(color2crop, img.getpixel((j, i)), tolerance):
                 bottom = i
                 break
         else:

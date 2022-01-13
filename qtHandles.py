@@ -10,6 +10,10 @@ from PyQt5.QtGui import *
 from PyQt5.QtCore import * 
 import sys 
 
+import colorHandles
+import cropHandles
+import transformHandles
+
 class GridWindow(QMainWindow):
 
     def __init__(self):
@@ -23,13 +27,14 @@ class GridWindow(QMainWindow):
 
         ############VARIABLES############
 
-        self.image_url = "grid_samples/im8.png"
-        self.image = Image.open(self.image_url)
+        self.image_url = "tmp.png"
+        self.image = None
 
 
         self.angle = 0
         self.color = QColor(255,0,0,0)
         self.tolerance = 0
+        self.approximation_area = 0
 
         self.size_cell = (0, 0)
         self.offset_cell = (0, 0)
@@ -101,15 +106,28 @@ class GridWindow(QMainWindow):
 
         try:
             name = QFileDialog.getOpenFileName(self, 'Open File', 'C\\', 'PNG files (*.png)')
-            self.image_url = name[0]
+            self.image = Image.open(name[0])
+            self.image.save('tmp.png')
+            self.updateWorskspace()
             
         except FileNotFoundError:
             pass
 
 
 
+    def updateWorskspace(self):
+        for i in reversed(range(self.workspace_layout.count())):
+            self.workspace_layout.itemAt(i).widget().deleteLater()
+
+        label = QLabel(self)
+        pix = QPixmap(self.image_url)
+        label.setPixmap(pix)
+        self.workspace_layout.addWidget(label)
 
 
+    def updateImage(self):
+        self.image.save('tmp.png')
+        self.updateWorskspace()
 
 
     ############TOOLS############
@@ -137,10 +155,17 @@ class GridWindow(QMainWindow):
         bycolor_lb = QLabel("Auto resizing by color")
         color_layout.addWidget(bycolor_lb)
 
-        test_button = QPushButton(self)
-        color_layout.addWidget(test_button)
-        test_button.clicked.connect(self.colorPicker)
+        color_button = QPushButton(self)
+        color_layout.addWidget(color_button)
+        color_button.clicked.connect(self.colorPicker)
         self.tools_layout.addLayout(color_layout)
+
+        approx_size_lb = QLabel("Approximation area size : ")
+        self.tools_layout.addWidget(approx_size_lb)
+
+        approx_edit = QLineEdit(self)
+        approx_edit.textChanged.connect(self.onApproxSizeEdit)
+        self.tools_layout.addWidget(approx_edit)
 
         tolerance_layout = QHBoxLayout()
         tolerance_lb = QLabel("Tolerance : ")
@@ -150,6 +175,11 @@ class GridWindow(QMainWindow):
         tolerance_layout.addWidget(tolerance_edit)
         tolerance_edit.textChanged.connect(self.onToleranceEdit)
         self.tools_layout.addLayout(tolerance_layout)
+
+        color_crop_button = QPushButton(self)
+        color_crop_button.clicked.connect(self.onColorCrop)
+        self.tools_layout.addWidget(color_crop_button)
+
 
         self.tools_layout.addStretch()
 
@@ -235,12 +265,20 @@ class GridWindow(QMainWindow):
 
     ############TRANSPARENCE############
     def onAutoTransp(self):
-        #removeTransp()
-        i = 0
+        self.image = cropHandles.cropTransparency(self.image)
+        self.updateImage()
 
     ############COULEURS############
     def colorPicker(self):
         self.color = QColorDialog.getColor()
+
+    def onApproxSizeEdit(self, text):
+        if text == '':
+            val = 0
+        else:
+            val = int(text)
+
+        self.approximation_area = val
 
     def onToleranceEdit(self, text):
         if text == '':
@@ -248,6 +286,12 @@ class GridWindow(QMainWindow):
         else:
             val = int(text)
         self.tolerance = val
+
+    def onColorCrop(self):
+        rgb_col = (self.color.red(), self.color.green(), self.color.blue())
+        self.image = cropHandles.cropByColor(self.image, rgb_col, self.tolerance)
+        self.updateImage()
+
 
     ############ROTATION############
     def onAngleEdit(self, text):
@@ -260,9 +304,11 @@ class GridWindow(QMainWindow):
         self.angle = angle
 
     def onAutoAngle(self):
-        self.angle = 12
-        #self.angle = getAngle()
-
+        rgb_col = (self.color.red(), self.color.green(), self.color.blue())
+        top_mark, bottom_mark = transformHandles.getMarkersByColor(self.image, rgb_col, self.approximation_area, self.tolerance)
+        self.image = transformHandles.adjustTransform(self.image, top_mark, bottom_mark)
+        self.updateImage()
+        
     ############CELLULES############
     def onSizeXEdit(self, text):
         if text == '':
@@ -321,29 +367,4 @@ class GridWindow(QMainWindow):
         label.setPixmap(pix)
         self.workspace_layout.addWidget(label)
 
-
-
-
-
-    
-    ############UTILITARY############
-    def fade(self, widget):
-        self.effect = QGraphicsOpacityEffect()
-        widget.setGraphicsEffect(self.effect)
-        self.animation = QtCore.QPropertyAnimation(self.effect, b"opacity")
-        self.animation.setDuration(500)
-        self.animation.setStartValue(1)
-        self.animation.setEndValue(0)
-        self.animation.start()
-
-
-    def unfade(self, widget):
-        self.effect = QGraphicsOpacityEffect()
-        widget.setGraphicsEffect(self.effect)
-
-        self.animation = QtCore.QPropertyAnimation(self.effect, b"opacity")
-        self.animation.setDuration(500)
-        self.animation.setStartValue(0)
-        self.animation.setEndValue(1)
-        self.animation.start()
 
