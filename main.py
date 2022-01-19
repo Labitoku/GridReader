@@ -21,14 +21,14 @@ def rgb2hex(col):
 
 def main():
     #print("Argv length : " + str(len(sys.argv)))
-    img = Image.open("grid_samples/im1.png") # default image, slighlty tilted
+    """img = Image.open("grid_samples/im1.png") # default image, slighlty tilted
     img2 = Image.open("grid_samples/im2.png") # 0.5° tilted
     img3 = Image.open("grid_samples/im3.png") # 12,8° tilted
     img4 = Image.open("grid_samples/im4.png") # 12,8° tilted, thick marks
     img5 = Image.open("grid_samples/im5.png") # 3° tilted
 
     hex_col = "E30613"
-    col = [227, 6, 19]
+    col = [227, 6, 19]"""
     """
         top_mark, bottom_mark = transformHandles.getMarkersByColor(img5, col, 250, tolerance=40)
 
