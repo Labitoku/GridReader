@@ -248,26 +248,27 @@ class GridWindow(QMainWindow):
         cells_lb = QLabel("Cells")
         self.tools_layout.addWidget(cells_lb)
 
-        cells_size_lb = QLabel("Size : ")
-        self.tools_layout.addWidget(cells_size_lb)
 
-        size_layout = QHBoxLayout()
-        x_lb = QLabel("X : ")
-        size_layout.addWidget(x_lb)
+        cells_qty_lb = QLabel("Quantity : ")
+        self.tools_layout.addWidget(cells_qty_lb)
 
-        x_edit = QLineEdit(self)
-        x_edit.textChanged.connect(self.onSizeXEdit)
-        x_edit.editingFinished.connect(self.onCellModFinished)
-        size_layout.addWidget(x_edit)
+        qty_layout = QHBoxLayout()
+        qty_x_lb = QLabel("X : ")
+        qty_layout.addWidget(qty_x_lb)
+
+        qty_x_edit = QLineEdit(self)
+        qty_x_edit.textChanged.connect(self.onQtyXEdit)
+        qty_x_edit.editingFinished.connect(self.onCellModFinished)
+        qty_layout.addWidget(qty_x_edit)
         
-        y_lb = QLabel("Y : ")
-        size_layout.addWidget(y_lb)
+        qty_y_lb = QLabel("Y : ")
+        qty_layout.addWidget(qty_y_lb)
 
-        y_edit = QLineEdit(self)
-        size_layout.addWidget(y_edit)
-        y_edit.textChanged.connect(self.onSizeYEdit)
-        y_edit.editingFinished.connect(self.onCellModFinished)
-        self.tools_layout.addLayout(size_layout)
+        qty_y_edit = QLineEdit(self)
+        qty_layout.addWidget(qty_y_edit)
+        qty_y_edit.textChanged.connect(self.onQtyYEdit)
+        qty_y_edit.editingFinished.connect(self.onCellModFinished)
+        self.tools_layout.addLayout(qty_layout)
 
         cells_offset_lb = QLabel("Offset : ")
         self.tools_layout.addWidget(cells_offset_lb)
@@ -292,6 +293,8 @@ class GridWindow(QMainWindow):
         offset_layout.addWidget(offset_y_edit)
 
         self.tools_layout.addLayout(offset_layout)
+
+
 
         full_cell_lb = QLabel("Full cell : ")
         self.tools_layout.addWidget(full_cell_lb)
@@ -414,25 +417,21 @@ class GridWindow(QMainWindow):
 
 
     ############CELLULES############
-    def onSizeXEdit(self, text):
+    def onQtyXEdit(self, text):
         if text == '':
             val = 0
         else:
             val = int(text)
 
-        l = list(self.size_cell)
-        l[0] = val
-        self.size_cell = tuple(l)
+        self.cell_qty_x = val
 
-    def onSizeYEdit(self, text):
+    def onQtyYEdit(self, text):
         if text == '':
             val = 0
         else:
             val = int(text)
 
-        l = list(self.size_cell)
-        l[1] = val
-        self.size_cell = tuple(l) 
+        self.cell_qty_y = val
 
     def onOffsetXEdit(self, text):
         if text == '':
@@ -442,7 +441,7 @@ class GridWindow(QMainWindow):
 
         l = list(self.offset_cell)
         l[0] = val
-        self.offset_cell = tuple(l) 
+        self.offset_cell = tuple(l)
 
     def onOffsetYEdit(self, text):
         if text == '':
@@ -453,34 +452,30 @@ class GridWindow(QMainWindow):
         l = list(self.offset_cell)
         l[1] = val
         self.offset_cell = tuple(l) 
-        
     def onFullCellChanged(self, button):
         self.full_cell = button.isChecked()
         self.onCellModFinished()
 
     def onCellModFinished(self):
-        self.cell_qty_x, self.cell_qty_y = cropHandles.getCellsQty(self.image, self.size_cell, self.offset_cell, self.full_cell)
+        #+self.cell_qty_x, self.cell_qty_y = cropHandles.getCellsQty(self.image, self.size_cell, self.offset_cell, self.full_cell)
         print(self.cell_qty_x, self.cell_qty_y)
         self.generateCellsRects()
 
 
     def generateCellsRects(self):
-                #shape = [(x0, y0), (x1, y1)]
-
-
+        pos_cell = ((self.image.width / self.cell_qty_x), (self.image.height / self.cell_qty_y))
+        self.size_cell = ((self.image.width / self.cell_qty_x - self.offset_cell[0]*2), (self.image.height / self.cell_qty_y - self.offset_cell[1]*2))
         cells_img = Image.new('RGBA', [self.image_mod.width, self.image_mod.height])
         cells_rects = ImageDraw.Draw(cells_img)
 
         for j in range (0, self.cell_qty_y):
             for i in range(0, self.cell_qty_x):
-                x0 = i * self.size_cell[0] + i * self.offset_cell[0]
-                y0 = j * self.size_cell[1] + j * self.offset_cell[1]
-                x1 = x0 + self.size_cell[0]
-                y1 = y0 + self.size_cell[1]
-                
+                x0 = i * pos_cell[0] + self.offset_cell[0] 
+                y0 = j * pos_cell[1] + self.offset_cell[1] 
+                x1 = x0 + self.size_cell[0] 
+                y1 = y0 + self.size_cell[1] 
                 shape = [(x0, y0), (x1, y1)]
-                cells_rects.rectangle(shape, fill = "#ff000044", outline= "red")
-        
+                cells_rects.rectangle(shape, fill = "#ff000044", outline= "red")    
         cells_img.save('tmp_cells.png')
         self.updateImage()
 
@@ -491,8 +486,6 @@ class GridWindow(QMainWindow):
         workspace_container.setStyleSheet("background-color: rgba(230,230,230,255);")
         self.workspace_layout = QGridLayout(workspace_container)
         self.workspace_layout.setAlignment(Qt.AlignCenter)
-
-
 
         label = QLabel(self)
         pix = QPixmap(self.image_url)
