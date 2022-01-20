@@ -299,7 +299,7 @@ def getCellsQty(img, crop_dim, offset = (0, 0), full_cell = True):
 
 
 
-def cropNSave(img, crop_dim, cell_qty_x, cell_qty_y, offset = (0, 0), full_cell = True, name="img"):
+def cropNSave(img, crop_pos, crop_dim, cell_qty_x, cell_qty_y, offset = (0, 0), full_cell = True, name="img"):
     """
     Description
     -----------
@@ -310,8 +310,11 @@ def cropNSave(img, crop_dim, cell_qty_x, cell_qty_y, offset = (0, 0), full_cell 
     img : Image
         The image of the grid you want to crop cells from.
 
+    crop_pos : tuple(int, int)
+        Position to move from one cell to another.
+
     crop_dim : tuple(int, int)
-        Size of the cells to crop from the image.
+        Size of the cells to crop from the image. If cells are strictly next to each other, set crop_dim to crop_pos.
 
     offset : tuple(int, int), optionnal
         Let the function slighlty offset each cut. No offset by default, cells are right next to each other.
@@ -321,38 +324,23 @@ def cropNSave(img, crop_dim, cell_qty_x, cell_qty_y, offset = (0, 0), full_cell 
     """
     #cell_qty_x, cell_qty_y = getCellsQty(img, crop_dim, offset, full_cell)
 
-    """x, y = img.size
-
-    
-    cell_qty_x = int(x / crop_dim[0])
-    cell_qty_y = int(y / crop_dim[1])
-
-    x = x - cell_qty_x * offset[0]
-    y = y - cell_qty_y * offset[1]
-
-    cell_qty_x = int(x / crop_dim[0])
-    cell_qty_y = int(y / crop_dim[1])
-
-    if full_cell:
-        if x % crop_dim[0] != 0:
-            cell_qty_x -= 1
-
-        if y % crop_dim[1] != 0:
-            cell_qty_y -= 1
-
-    print(cell_qty_x, cell_qty_y)"""
+    """x0 = i * pos_cell[0] + self.offset_cell[0] 
+    y0 = j * pos_cell[1] + self.offset_cell[1] 
+    x1 = x0 + self.size_cell[0] 
+    y1 = y0 + self.size_cell[1]"""
 
     for i in range(0, cell_qty_x):
-        left = i * crop_dim[0] + i * offset[0]    
+        left = i * crop_pos[0] + offset[0]
         right = left + crop_dim[0]
 
         for j in range(0, cell_qty_y):
-            top = j * crop_dim[1] + j * offset[1]
+            top = j * crop_pos[1] + offset[1]
             bottom = top + crop_dim[1]
 
 
             new_img = img.crop((left, top, right, bottom))
-            new_img.save(f"grid_samples/resCrops/{name}_{i}_{j}.png")
+            #new_img.save(f"grid_samples/resCrops/{name}_{i}_{j}.png")
+            new_img.save(f"{name}_{i}_{j}.png")
 
     return 0
 

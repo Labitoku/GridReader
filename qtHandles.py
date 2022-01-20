@@ -43,6 +43,7 @@ class GridWindow(QMainWindow):
         self.tolerance = 0
         self.approximation_area = 0
 
+        self.pos_cell = (0, 0)
         self.size_cell = (10, 10)
         self.offset_cell = (0, 0)
         self.full_cell = True
@@ -103,13 +104,21 @@ class GridWindow(QMainWindow):
         openAct = QAction('Open file', self)
         openAct.setShortcut('Ctrl+O')
         openAct.setStatusTip('Open image file')
-        openAct.triggered.connect(self.open_file)
+        openAct.triggered.connect(self.openFile)
+
+        saveAct = QAction('Save files', self)
+        saveAct.setShortcut('Ctrl+S')
+        saveAct.setStatusTip('Save images')
+        saveAct.triggered.connect(self.saveFiles)
+
 
         file_menu.addAction(openAct)
+        file_menu.addAction(saveAct)
+    
         menubar.addMenu(file_menu)
 
 
-    def open_file(self):
+    def openFile(self):
 
         try:
             name = QFileDialog.getOpenFileName(self, 'Open File', 'C\\', 'PNG files (*.png)')
@@ -120,6 +129,17 @@ class GridWindow(QMainWindow):
             
         except FileNotFoundError:
             pass
+
+    def saveFiles(self):
+
+        options = QFileDialog.Options()
+        options |= QFileDialog.DontUseNativeDialog
+        filename, _ = QFileDialog.getSaveFileName(self, "Save Image", r"H:\Image", "All Files (*)", options=options)
+
+        #name = str(QFileDialog.getSaveFileName(self, 'Select Directory'))
+        cropHandles.cropNSave(self.image, self.pos_cell, self.size_cell, self.cell_qty_x, self.cell_qty_y, self.offset_cell, self.full_cell, filename)
+
+
 
     """UPDATE FUNCTIONS (IMAGE / WORKSPACE)"""
 
@@ -463,19 +483,19 @@ class GridWindow(QMainWindow):
 
 
     def generateCellsRects(self):
-        pos_cell = ((self.image.width / self.cell_qty_x), (self.image.height / self.cell_qty_y))
+        self.pos_cell = ((self.image.width / self.cell_qty_x), (self.image.height / self.cell_qty_y))
         self.size_cell = ((self.image.width / self.cell_qty_x - self.offset_cell[0]*2), (self.image.height / self.cell_qty_y - self.offset_cell[1]*2))
         cells_img = Image.new('RGBA', [self.image_mod.width, self.image_mod.height])
         cells_rects = ImageDraw.Draw(cells_img)
 
         for j in range (0, self.cell_qty_y):
             for i in range(0, self.cell_qty_x):
-                x0 = i * pos_cell[0] + self.offset_cell[0] 
-                y0 = j * pos_cell[1] + self.offset_cell[1] 
+                x0 = i * self.pos_cell[0] + self.offset_cell[0] 
+                y0 = j * self.pos_cell[1] + self.offset_cell[1] 
                 x1 = x0 + self.size_cell[0] 
                 y1 = y0 + self.size_cell[1] 
                 shape = [(x0, y0), (x1, y1)]
-                cells_rects.rectangle(shape, fill = "#ff000044", outline= "red")    
+                cells_rects.rectangle(shape, fill = "#ff000044", outline= "red")
         cells_img.save('tmp_cells.png')
         self.updateImage()
 
